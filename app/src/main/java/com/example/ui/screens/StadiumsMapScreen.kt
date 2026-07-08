@@ -105,7 +105,6 @@ fun StadiumsMapScreen(
                     )
                 }
 
-                // Toggle bar adaptado solo a Ilustrado y Lista
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -150,7 +149,6 @@ fun StadiumsMapScreen(
         ) {
             when (selectedViewMode) {
                 0 -> {
-                    // Illustrated Map Mode (Canvas-based)
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -199,7 +197,6 @@ fun StadiumsMapScreen(
                             val yMin = 15.0
                             val yMax = 55.0
 
-                            // 1. Draw latitude and longitude background gridlines
                             val gridColor = Color(0x1A94A3B8)
                             for (lat in 20..50 step 10) {
                                 val pctY = (lat - yMin) / (yMax - yMin)
@@ -212,7 +209,6 @@ fun StadiumsMapScreen(
                                 drawLine(gridColor, Offset(x, 0f), Offset(x, canvasH.toFloat()), strokeWidth = 1f)
                             }
 
-                            // 2. Draw tactical connection routes between close stadiums
                             stadiums.forEach { s1 ->
                                 val s2 = stadiums.filter { it.id != s1.id }
                                     .minByOrNull { s2 ->
@@ -241,7 +237,6 @@ fun StadiumsMapScreen(
                                 }
                             }
 
-                            // 3. Draw stadium nodes
                             stadiums.forEach { stadium ->
                                 val pctX = (stadium.longitude - xMin) / (xMax - xMin)
                                 val pctY = (stadium.latitude - yMin) / (yMax - yMin)
@@ -252,27 +247,11 @@ fun StadiumsMapScreen(
                                 val isSelected = stadium.id == selectedStadium?.id
 
                                 if (isSelected) {
-                                    drawCircle(
-                                        color = Color(0x44F43F5E),
-                                        radius = 24f,
-                                        center = Offset(projX, projY)
-                                    )
-                                    drawCircle(
-                                        color = Color(0xFFF43F5E),
-                                        radius = 8f,
-                                        center = Offset(projX, projY)
-                                    )
+                                    drawCircle(color = Color(0x44F43F5E), radius = 24f, center = Offset(projX, projY))
+                                    drawCircle(color = Color(0xFFF43F5E), radius = 8f, center = Offset(projX, projY))
                                 } else {
-                                    drawCircle(
-                                        color = Color(0x3338BDF8),
-                                        radius = 16f,
-                                        center = Offset(projX, projY)
-                                    )
-                                    drawCircle(
-                                        color = Color(0xFF38BDF8),
-                                        radius = 6f,
-                                        center = Offset(projX, projY)
-                                    )
+                                    drawCircle(color = Color(0x3338BDF8), radius = 16f, center = Offset(projX, projY))
+                                    drawCircle(color = Color(0xFF38BDF8), radius = 6f, center = Offset(projX, projY))
                                 }
 
                                 drawText(
@@ -306,7 +285,6 @@ fun StadiumsMapScreen(
                     }
                 }
                 1 -> {
-                    // Standard List View Mode
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
@@ -326,9 +304,7 @@ fun StadiumsMapScreen(
                                     AsyncImage(
                                         model = stadium.imageUrl,
                                         contentDescription = stadium.name,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(160.dp),
+                                        modifier = Modifier.fillMaxWidth().height(160.dp),
                                         contentScale = ContentScale.Crop
                                     )
 
@@ -401,8 +377,7 @@ fun StadiumsMapScreen(
                 }
             }
 
-            // Beautiful slide-up popup card for Illustrated Mode stadium details
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 visible = selectedViewMode == 0 && selectedStadium != null,
                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
                 exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
@@ -428,9 +403,7 @@ fun StadiumsMapScreen(
                             AsyncImage(
                                 model = stadium.imageUrl,
                                 contentDescription = stadium.name,
-                                modifier = Modifier
-                                    .size(76.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
+                                modifier = Modifier.size(76.dp).clip(RoundedCornerShape(12.dp)),
                                 contentScale = ContentScale.Crop
                             )
                             Spacer(modifier = Modifier.width(16.dp))
@@ -449,7 +422,7 @@ fun StadiumsMapScreen(
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
-                                    text = "Capacidad: ${stadium.capacity.toLocaleString()} personas",
+                                    text = "Capacidad: ${"%,d".format(stadium.capacity)} personas",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -470,8 +443,4 @@ fun StadiumsMapScreen(
             }
         }
     }
-}
-
-private fun Int.toLocaleString(): String {
-    return "%,d".format(this)
 }
